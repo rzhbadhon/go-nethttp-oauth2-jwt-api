@@ -18,7 +18,7 @@ func main() {
 	db := database.ConnectDB()
 	defer db.Close()
 
-	// creating handler injecting dependecies
+	// creating handler, injecting dependecies
 	h := handlers.NewHandler(db) // injecting dependecies
 
 	// setup router

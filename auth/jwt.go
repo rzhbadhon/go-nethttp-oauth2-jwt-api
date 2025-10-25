@@ -21,7 +21,7 @@ func GenerateJWT(userID uuid.UUID, role string) (string, error){
 	expirationTime := time.Now().Add(24*time.Hour)
 
 	// setting claims
-	claims := &AppClaims{
+	claims := &AppClaims{ // this is payload actually
 		UserID: userID,
 		Role: role,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -29,15 +29,15 @@ func GenerateJWT(userID uuid.UUID, role string) (string, error){
 		},
 	}
 
-	// cooking header + payload (hs256)
+	// cooking header + payload with (hs256)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	// add lil bit signature with secret keyclaims
+	// adding lil bit signature with secret key claims
 	tokenString, err := token.SignedString(jwtSecretKey)
 	if err != nil{
 		return "", err
 	}
 
-	// cooking done it must taste sooooo goood for sake
+	// finsl token cooking done it must taste sooooo goood for sake
 	return tokenString, nil
 }
