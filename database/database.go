@@ -2,12 +2,16 @@ package database
 
 import (
 	"log"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 )
 
 func ConnectDB() *sqlx.DB{
-	connStr := "user=postgres password:1212 dbname=yourdb sslmode=disable"
+	connStr := os.Getenv("DB_URL")
+	if connStr == ""{
+		log.Fatal("DB_URL isnt set")
+	}
 
 	db ,err := sqlx.Connect("psotgres", connStr)
 	if err != nil{

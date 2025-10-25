@@ -6,6 +6,8 @@ import (
 	"go-auth-manual/handlers"
 	"log"
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -13,6 +15,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	// env load
+	err := godotenv.Load()
+	if err != nil{
+		log.Println(" .env not found")
+	}
 
 	// connect db first
 	db := database.ConnectDB()
@@ -26,11 +34,11 @@ func main() {
 
 	mux.HandleFunc("/", HomeHandler)
 	mux.HandleFunc("/signup", h.SignUpHandler)
-	//mux.HandleFunc("/login", LoginHandler)
+	mux.HandleFunc("/login", h.LoginHandler)
 
 	fmt.Println("Server is starting on port :9000...")
 
-	err := http.ListenAndServe(":9000", mux)
+	err = http.ListenAndServe(":9000", mux)
 	if err != nil {
 		log.Println("Error starting server ", err)
 	}

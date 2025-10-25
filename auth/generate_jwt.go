@@ -1,13 +1,15 @@
 package auth
 
 import (
+	"log"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
-var jwtSecretKey = []byte("this_is_a_secret_key")
+var jwtSecretKey []byte
 
 // this is payload you can call hehe
 type AppClaims struct {
@@ -40,4 +42,12 @@ func GenerateJWT(userID uuid.UUID, role string) (string, error){
 
 	// finsl token cooking done it must taste sooooo goood for sake
 	return tokenString, nil
+}
+
+func init(){
+	secret := os.Getenv("JWT_SECRET")
+	if secret == ""{
+		log.Fatal("JWT_SECRET env not set")
+	}
+	jwtSecretKey = []byte(secret)
 }
