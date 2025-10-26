@@ -9,7 +9,7 @@ import (
 
 type contextKey string
 
-const userClaimsKey contextKey = "userClaims"
+const UserClaimsKey contextKey = "userClaims"
 
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc{
 
@@ -32,7 +32,10 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc{
 
 		// step 3: pass the data to the next handler with context
 
-		ctx := context.WithValue(r.Context(), userClaimsKey, claims)
+		ctx := context.WithValue(r.Context(), UserClaimsKey, claims)
+
+		/* withValue adds new keyvalue pairs with the context what is really necessary to pass the info to the next handler
+		here, key= userClaimsKey and its value=claims */
 
 		// step 4: call the next handler... I mean middleware
 		log.Printf("Autheticated user %s (Role: %s) accessing %s", claims.UserID, claims.Role, r.URL.Path)

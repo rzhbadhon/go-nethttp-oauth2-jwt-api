@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-auth-manual/database"
 	"go-auth-manual/handlers"
+	"go-auth-manual/middleware"
 	"log"
 	"net/http"
 
@@ -35,6 +36,8 @@ func main() {
 	mux.HandleFunc("/", HomeHandler)
 	mux.HandleFunc("/signup", h.SignUpHandler)
 	mux.HandleFunc("/login", h.LoginHandler)
+
+	mux.HandleFunc("/users", middleware.AuthMiddleware(h.GetAllUserHandler))
 
 	fmt.Println("Server is starting on port :9000...")
 
