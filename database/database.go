@@ -13,7 +13,7 @@ func ConnectDB() *sqlx.DB{
 		log.Fatal("DB_URL isnt set")
 	}
 
-	db ,err := sqlx.Connect("psotgres", connStr)
+	db ,err := sqlx.Connect("postgres", connStr)
 	if err != nil{
 		log.Fatal("failed to connect to database: ", err)
 	}

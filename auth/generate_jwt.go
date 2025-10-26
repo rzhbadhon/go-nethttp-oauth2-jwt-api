@@ -7,25 +7,26 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
 var jwtSecretKey []byte
 
 // this is payload you can call hehe
 type AppClaims struct {
-	UserID uuid.UUID `json:"user_id"`
-	Role string `json:"role"`
-	jwt.RegisteredClaims // like expiry
+	UserID               uuid.UUID `json:"user_id"`
+	Role                 string    `json:"role"`
+	jwt.RegisteredClaims           // like expiry
 }
 
-func GenerateJWT(userID uuid.UUID, role string) (string, error){
+func GenerateJWT(userID uuid.UUID, role string) (string, error) {
 	// setting token expiry time 24 hour only
-	expirationTime := time.Now().Add(24*time.Hour)
+	expirationTime := time.Now().Add(24 * time.Hour)
 
 	// setting claims
 	claims := &AppClaims{ // this is payload actually
 		UserID: userID,
-		Role: role,
+		Role:   role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -36,7 +37,7 @@ func GenerateJWT(userID uuid.UUID, role string) (string, error){
 
 	// adding lil bit signature with secret key claims
 	tokenString, err := token.SignedString(jwtSecretKey)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -44,9 +45,15 @@ func GenerateJWT(userID uuid.UUID, role string) (string, error){
 	return tokenString, nil
 }
 
-func init(){
+func init() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Warning: .env file not found, checking system env")
+	}
+
 	secret := os.Getenv("JWT_SECRET")
-	if secret == ""{
+	if secret == "" {
 		log.Fatal("JWT_SECRET env not set")
 	}
 	jwtSecretKey = []byte(secret)

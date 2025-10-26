@@ -28,7 +28,7 @@ func (h *Handler) GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
 	var users []models.User
 	// we aint selecting the passwords of the users
 	query := `SELECT id, first_name, last_name, email, role, created_at FROM users`
-	err := h.DB.Select(users, query)
+	err := h.DB.Select(&users, query)
 	if err != nil {
 		log.Println("Database error getting users:", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)

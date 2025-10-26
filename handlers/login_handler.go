@@ -27,7 +27,7 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request){
 
 	// find that req data into db
 	var user models.User // this will help us to get user hashed pass
-	query := `SELECT FROM users WHERE email=$1`
+	query := `SELECT * FROM users WHERE email=$1`
 
 	/* db get search email across database and if found it puts all the data on the user struct */
 	err = h.DB.Get(&user, query, req.Email)

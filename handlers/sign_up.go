@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,9 +33,19 @@ func (h *Handler) SignUpHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// hashing password
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil{
+		http.Error(w, "failed to generate hashed password", http.StatusInternalServerError)
+		return
+	}
+
 	// adding other fields manually
 	user.ID = uuid.New() // unique id
-	user.Role = "user"
+	if user.Role == ""{
+		user.Role="user"
+	}
+	user.Password = string(hashedPass)
 	user.CreatedAt = time.Now()
 	user.UpdatedAt = time.Now()
 
