@@ -33,11 +33,19 @@ func main() {
 	// setup router
 	mux := http.NewServeMux()
 
+
 	mux.HandleFunc("/", HomeHandler)
 	mux.HandleFunc("/signup", h.SignUpHandler)
 	mux.HandleFunc("/login", h.LoginHandler)
 
 	mux.HandleFunc("/users", middleware.AuthMiddleware(h.GetAllUserHandler))
+
+	//oauth route
+	mux.HandleFunc("/auth/google/login", h.HandleGoogleLogin)
+
+	mux.HandleFunc("/auth/google/callback", h.HandleGoogleCallback)
+
+	
 
 	fmt.Println("Server is starting on port :9000...")
 

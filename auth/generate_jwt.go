@@ -1,13 +1,10 @@
 package auth
 
 import (
-	"log"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 )
 
 var jwtSecretKey []byte
@@ -43,18 +40,4 @@ func GenerateJWT(userID uuid.UUID, role string) (string, error) {
 
 	// finsl token cooking done it must taste sooooo goood for sake
 	return tokenString, nil
-}
-
-func init() {
-
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("Warning: .env file not found, checking system env")
-	}
-
-	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		log.Fatal("JWT_SECRET env not set")
-	}
-	jwtSecretKey = []byte(secret)
 }
