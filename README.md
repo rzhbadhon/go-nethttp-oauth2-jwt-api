@@ -1,33 +1,37 @@
-# Go `net/http` JWT Authentication API
+# Go `net/http` Authentication & OAuth2 API
 
 ![Go Version](https://img.shields.io/badge/Go-1.21%2B-blue.svg)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
-A user authentication (Signup/Login) API built from scratch. This project intentionally avoids frameworks like Gin or Echo, using only Go's standard `net/http` library.
+A complete user authentication API (Signup, Login, Protected Routes) built from scratch using **only** Go's standard `net/http` library.
 
-The primary goal is to deeply understand Go's core packages, modular project structure, dependency injection, and the fundamentals of a secure API (like JWT and bcrypt).
+This project was built to demonstrate core Go concepts (middleware, context, handlers, project structure) and authentication principles (JWT, bcrypt, OAuth2) *without* the magic of a framework like Gin or Echo.
 
 ## ✨ Features
 
-* **Standard Library:** Routing and server handling using only `net/http`.
-* **User Signup:** Input validation using `go-playground/validator`.
-* **User Login:** Email and password verification.
-* **Secure Passwords:** Password hashing and comparison using `golang.org/x/crypto/bcrypt`.
-* **JWT Authentication:** Token generation and validation using `golang-jwt/jwt/v5`.
-* **Modular Structure:** Clean separation of concerns into `handlers`, `models`, `database`, and `auth` packages.
-* **Database:** PostgreSQL integration using `sqlx` for cleaner database interactions.
+* **Framework-Free:** Built entirely with the `net/http` standard library.
+* **Modular Structure:** Clean code separation into `handlers`, `models`, `database`, `auth`, and `middleware` packages.
+* **Standard Signup:** User registration with input validation (`go-playground/validator`) and password hashing (`bcrypt`).
+* **Standard Login:** Email & password login that returns a JSON Web Token (JWT).
+* **Social Login:** "Login with Google" using the `golang.org/x/oauth2` package.
+* **JWT Authentication:** Secure token generation (`golang-jwt/jwt/v5`) and validation.
+* **Protected Routes:** Custom `AuthMiddleware` to protect endpoints and check for credentials.
+* **Role-Based Access Control (RBAC):** Example of an admin-only route (`/users`).
+* **Modern Database:** Uses `sqlx` for clean database queries to PostgreSQL.
+* **Configuration:** Securely configured using `.env` files (`joho/godotenv`).
 
 ## 🛠 Tech Stack
 
 * **Core:** `net/http` (Server & Routing)
-* **Database:** `github.com/jmoiron/sqlx` (PostgreSQL)
-* **Driver:** `github.com/lib/pq` (Postgres Driver)
-* **Authentication:** `github.com/golang-jwt/jwt/v5`
-* **Security:** `golang.org/x/crypto/bcrypt`
+* **Database:** `github.com/jmoiron/sqlx`
+* **Postgres Driver:** `github.com/lib/pq`
+* **JWT:** `github.com/golang-jwt/jwt/v5`
+* **OAuth2:** `golang.org/x/oauth2`
+* **Hashing:** `golang.org/x/crypto/bcrypt`
 * **Validation:** `github.com/go-playground/validator/v10`
-* **Configuration:** `github.com/joho/godotenv`
-* **Utilities:** `github.com/google/uuid`
+* **Config:** `github.com/joho/godotenv`
+* **UUIDs:** `github.com/google/uuid`
 
 ## 📂 Project Structure
 
@@ -35,44 +39,48 @@ The primary goal is to deeply understand Go's core packages, modular project str
 go-auth-manual/
 ├── main.go               # Entry point, server setup, and routing
 ├── go.mod
-├── go.sum
-├── .env.example          # Example environment variables
+├── .env                  # (Must be created by you)
+├── .env.example          # Example config file
 ├── auth/
-│   └── jwt.go            # JWT generation and validation logic
+│   ├── jwt.go            # JWT generation & validation
+│   └── oauth.go          # OAuth2 configuration
 ├── database/
-│   └── database.go       # PostgreSQL connection setup (sqlx)
+│   └── database.go       # PostgreSQL (sqlx) connection
 ├── handlers/
-│   └── auth_handler.go   # HTTP handlers (Signup, Login)
+│   ├── auth_handler.go   # Signup, Login, GetUsers handlers
+│   └── oauth_handler.go  # GoogleLogin, GoogleCallback handlers
+├── middleware/
+│   └── auth_middleware.go # JWT validation middleware
 ├── models/
-│   └── user.go           # Data structures (User, LoginRequest)
+│   └── user.go           # User, LoginRequest structs
 └── validator/
     └── validator.go      # Global validator instance
 ```
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 1. Prerequisites
 
-* [Go (1.21 or newer)](https://go.dev/dl/)
-* [PostgreSQL](https://www.postgresql.org/download/)
-* [Git](https://git-scm.com/downloads/)
+* Go 1.21 or newer
+* PostgreSQL
+* Git
 
-### 1. Clone the Project
+### 2. Clone the Project
 
 ```bash
 git clone [https://github.com/rzhbadhon/user-create-login-logout-authentication-go.git](https://github.com/rzhbadhon/user-create-login-logout-authentication-go.git)
 cd user-create-login-logout-authentication-go
 ```
 
-### 2. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
 go mod tidy
 ```
 
-### 3. Database Setup
+### 4. Database Setup
 
-Log in to your PostgreSQL instance and create a new database (e.g., `auth_db`). Then, run the following SQL query to create the `users` table:
+Log in to PostgreSQL and create a database (e.g., `auth_db`). Then, run the following SQL to create the `users` table:
 
 ```sql
 CREATE TABLE users (
@@ -87,25 +95,39 @@ CREATE TABLE users (
 );
 ```
 
-### 4. Configuration
+### 5. Configuration (Most Important Step)
 
-Create a `.env` file by copying the example file. This file will hold your database credentials and secret keys.
+You must set up your environment variables.
 
+#### a. Google OAuth2 Credentials
+1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2.  Create a new project.
+3.  Go to "APIs & Services" > "Credentials".
+4.  Click "Create Credentials" > "OAuth client ID".
+5.  Select "Web application".
+6.  Under **"Authorized redirect URIs"**, add: `http://localhost:9000/auth/google/callback`
+7.  Click "Create". Copy your **Client ID** and **Client Secret**.
+
+#### b. Create `.env` file
+Copy the example file:
 ```bash
 cp .env.example .env
 ```
-
-Now, edit the `.env` file with your information:
+Now, edit your new `.env` file with your credentials:
 
 ```.env
 # Your PostgreSQL connection string
-DB_URL="user=postgres password=yourpassword dbname=auth_db sslmode=disable"
+DB_URL="user=postgres password=1212 dbname=auth_db sslmode=disable"
 
 # A strong, random secret key for signing JWTs
-JWT_SECRET="your_very_strong_and_random_secret_key"
+JWT_SECRET="your_very_strong_random_secret_key_here"
+
+# Credentials from Google Cloud Console (Step 5a)
+GOOGLE_CLIENT_ID="your_google_client_id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="your_google_client_secret"
 ```
 
-### 5. Run the Server
+### 6. Run the Server
 
 ```bash
 go run main.go
@@ -114,45 +136,71 @@ The server will start on `http://localhost:9000`.
 
 ## 🔑 API Endpoints
 
-| Method | Endpoint | Description | Body (Request) | Response (Success) |
-| :--- | :--- | :--- | :--- | :--- |
-| `POST` | `/signup` | Registers a new user. | `models.User` | `models.User` (password omitted) |
-| `POST` | `/login` | Logs in a user and returns a JWT. | `models.LoginRequest` | `{ "token": "..." }` |
-| `GET` | `/` | A simple welcome message. | N/A | `string` |
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/signup` | Registers a new user. | No |
+| `POST` | `/login` | Logs in with email/password, returns a JWT. | No |
+| `GET` | `/auth/google/login` | Redirects you to the Google login page. | No |
+| `GET` | `/auth/google/callback`| Google redirects here after login. Returns a JWT. | No |
+| `GET` | `/users` | Gets a list of all users. | **Yes** (Admin Role) |
 
-## 🧪 Testing with cURL
+## 🧪 How to Test
 
-### 1. Signup
+### Test 1: Standard Signup & Login (Postman)
 
+**1. Signup (as Admin)**
 ```bash
+# Request (POST http://localhost:9000/signup)
 curl -X POST http://localhost:9000/signup \
 -H "Content-Type: application/json" \
 -d '{
-    "first_name": "Test",
+    "first_name": "Admin",
     "last_name": "User",
-    "email": "test@example.com",
-    "password": "password123"
+    "email": "admin@example.com",
+    "password": "adminpassword123",
+    "role": "admin"
 }'
 ```
 
-### 2. Login
-
+**2. Login**
 ```bash
+# Request (POST http://localhost:9000/login)
 curl -X POST http://localhost:9000/login \
 -H "Content-Type: application/json" \
 -d '{
-    "email": "test@example.com",
-    "password": "password123"
+    "email": "admin@example.com",
+    "password": "adminpassword123"
 }'
+
+# Response (Save this token)
+# { "token": "eyJhbGciOiJIUzI1Ni..." }
 ```
 
-**Success Response:**
-```json
-{
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoi..."
-}
+**3. Access Protected Route**
+(Replace `<TOKEN>` with the token from Step 2)
+```bash
+# Request (GET http://localhost:9000/users)
+curl -X GET http://localhost:9000/users \
+-H "Authorization: Bearer <TOKEN>"
+
+# Response (Success! You will see the list of users)
 ```
+
+### Test 2: Google OAuth2 Login (Browser)
+
+1.  Start your server: `go run main.go`.
+2.  In your **browser** (not Postman), go to:
+    `http://localhost:9000/auth/google/login`
+3.  You will be redirected to Google. Log in with your Google account.
+4.  Google will redirect you back to the callback URL.
+5.  Your browser will display the final JSON response, including your new JWT:
+    ```json
+    {
+        "message": "Login successful via Google",
+        "token": "eyJhbGciOiJIUzI1Ni..."
+    }
+    ```
 
 ## 📜 License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
