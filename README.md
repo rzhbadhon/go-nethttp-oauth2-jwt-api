@@ -68,7 +68,7 @@ go-auth-manual/
 ### 2. Clone the Project
 
 ```bash
-git clone [https://github.com/rzhbadhon/user-create-login-logout-authentication-go.git](https://github.com/rzhbadhon/user-create-login-logout-authentication-go.git)
+git clone [https://github.com/rzhbadhon/go-nethttp-oauth2-jwt-api.git](https://github.com/rzhbadhon/go-nethttp-oauth2-jwt-api.git)
 cd user-create-login-logout-authentication-go
 ```
 
