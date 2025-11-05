@@ -42,13 +42,19 @@ go-auth-manual/
 ├── .env                  # (Must be created by you)
 ├── .env.example          # Example config file
 ├── auth/
-│   ├── jwt.go            # JWT generation & validation
+│   ├── generate_jwt.go            # JWT generation & validation
 │   └── oauth.go          # OAuth2 configuration
+│   └── init.go
+│   └── validate_jwt.go
 ├── database/
 │   └── database.go       # PostgreSQL (sqlx) connection
 ├── handlers/
 │   ├── auth_handler.go   # Signup, Login, GetUsers handlers
-│   └── oauth_handler.go  # GoogleLogin, GoogleCallback handlers
+│   └── oauth_handlers.go  # GoogleLogin, GoogleCallback handlers
+│   └── handler.go
+│   └── login handler.go
+│   └── oauth_callback.go
+│   └── sign_up.go
 ├── middleware/
 │   └── auth_middleware.go # JWT validation middleware
 ├── models/
