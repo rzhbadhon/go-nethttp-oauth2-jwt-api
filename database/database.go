@@ -6,7 +6,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 )
-
+// this func connects db which is postgres
 func ConnectDB() *sqlx.DB{
 	connStr := os.Getenv("DB_URL")
 	if connStr == ""{

@@ -33,16 +33,15 @@ func main() {
 	// setup router
 	mux := http.NewServeMux()
 
-
+	// all routes
 	mux.HandleFunc("/", HomeHandler)
 	mux.HandleFunc("/signup", h.SignUpHandler)
 	mux.HandleFunc("/login", h.LoginHandler)
-
+	/// admin specific routes
 	mux.HandleFunc("/users", middleware.AuthMiddleware(h.GetAllUserHandler))
 
-	//oauth route
+	//oauth routes
 	mux.HandleFunc("/auth/google/login", h.HandleGoogleLogin)
-
 	mux.HandleFunc("/auth/google/callback", h.HandleGoogleCallback)
 
 	

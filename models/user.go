@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// model means the user properties...
 type User struct {
 	ID        uuid.UUID `json:"id" db:"id"`
 	FirstName string    `json:"first_name" validate:"required" db:"first_name"`

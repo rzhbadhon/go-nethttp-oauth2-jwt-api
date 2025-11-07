@@ -9,6 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// this validates jwt 
 func ValidateJWT(tokenString string) (*AppClaims, error) {
 	claims := &AppClaims{}
 

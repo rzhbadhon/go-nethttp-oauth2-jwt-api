@@ -9,6 +9,7 @@ import (
 	"go-auth-manual/middleware"
 )
 
+// this only for admin.. so middleware applied here
 func (h *Handler) GetAllUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// read context what middleware inserted in the request

@@ -6,7 +6,8 @@ import (
 
 	"github.com/joho/godotenv"
 )
-
+//  init func calls first before the main func
+//  init is using to load env first before the main func
 func init() {
 
 	err := godotenv.Load()

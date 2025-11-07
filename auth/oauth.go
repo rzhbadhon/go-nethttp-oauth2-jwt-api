@@ -7,7 +7,7 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
-
+//  this func is to load config for oauth
 // declaring variable globally to share
 var GoogleOAuthConfig *oauth2.Config
 
